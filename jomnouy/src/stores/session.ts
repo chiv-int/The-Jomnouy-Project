@@ -8,5 +8,10 @@ export const useSessionStore = defineStore('session', () => {
   const currentUser = ref<User>({ id: 1, name: 'Dara' })
   const role = ref<Role>('member')
   const isModerator = computed(() => role.value === 'moderator')
-  return { currentUser, role, isModerator }
+
+  function setRole(newRole: Role) {
+    role.value = newRole
+  }
+
+  return { currentUser, role, isModerator, setRole }
 })

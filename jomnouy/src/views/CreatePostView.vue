@@ -88,6 +88,41 @@ async function submit() {
       </label>
       <p v-if="submitted && errors.content" class="error">{{ errors.content }}</p>
 
+      <!-- Option to input image for the post -->
+      <div class="image-upload-section">
+        <label for="post-image-input" class="image-upload-header">
+          <span class="label-title">Attach image (optional)</span>
+          <span class="muted">Add a photo to showcase your item or illustrate your post</span>
+        </label>
+        <div class="file-dropzone">
+          <input
+            id="post-image-input"
+            type="file"
+            accept="image/*"
+            class="file-input-native"
+          />
+          <div class="file-dropzone-ui">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            <span class="dropzone-text">Click to choose image or drag and drop</span>
+            <span class="dropzone-sub muted">PNG, JPG, WebP supported</span>
+          </div>
+        </div>
+      </div>
+
       <p v-if="submitError" class="error" role="alert">{{ submitError }}</p>
 
       <div class="row end">

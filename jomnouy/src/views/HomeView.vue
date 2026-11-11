@@ -1,18 +1,24 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import CategoryRail from '@/components/CategoryRail.vue'
 import PostCard from '@/components/PostCard.vue'
 import SkeletonCard from '@/components/SkeletonCard.vue'
 import StatePanel from '@/components/StatePanel.vue'
 import { usePostsStore } from '@/stores/posts'
+import { CATEGORIES } from '@/types'
 import type { Category } from '@/types'
 
 const store = usePostsStore()
 const route = useRoute()
 
-// Local state: which category icon is selected is only this page's business.
-const category = ref<Category | 'All'>('All')
+// Read the category from the route query instead of local state
+const category = computed<Category | 'All'>(() => {
+  const cat = route.query.category
+  if (typeof cat === 'string' && (CATEGORIES as readonly string[]).includes(cat)) {
+    return cat as Category
+  }
+  return 'All'
+})
 const query = computed(() => (typeof route.query.q === 'string' ? route.query.q : ''))
 
 function load() {
@@ -24,20 +30,23 @@ watch([category, query], load, { immediate: true })
 </script>
 
 <template>
-  <div class="page grid3">
-    <CategoryRail v-model="category" />
-
-    <main class="stack">
+  <div class="feed-layout">
+    <main class="feed-col stack">
       <p v-if="route.query.denied === '1'" class="notice" role="alert">
         You need to be a moderator to open that page.
       </p>
-      <p class="muted">
-        Showing: {{ category }}<template v-if="query"> · search “{{ query }}”</template>
-      </p>
+
+      <div class="feed-filter-bar">
+        <p class="muted">
+          Showing: <strong>{{ category }}</strong><template v-if="query"> · search “{{ query }}”</template>
+        </p>
+      </div>
 
       <!-- Loading state -->
       <template v-if="store.loading">
-        <SkeletonCard v-for="n in 3" :key="n" />
+        <div class="post-feed">
+          <SkeletonCard v-for="n in 3" :key="n" />
+        </div>
       </template>
 
       <!-- Error state -->
@@ -57,17 +66,17 @@ watch([category, query], load, { immediate: true })
       />
 
       <!-- Normal state -->
-      <template v-else>
+      <div v-else class="post-feed">
         <PostCard v-for="post in store.posts" :key="post.id" :post="post" />
-      </template>
+      </div>
     </main>
 
-    <aside class="stack">
-      <div class="box pad dashed">
+    <aside class="right-col stack">
+      <div class="box pad dashed announcement-box">
         <h2>Announcement</h2>
         <p class="muted">Reminder: meet in public places and never pay in advance.</p>
       </div>
-      <div class="box pad">
+      <div class="box pad rules-box">
         <h2>Community rules</h2>
         <p class="muted">Be kind. No commercial spam. Report bad behavior.</p>
       </div>

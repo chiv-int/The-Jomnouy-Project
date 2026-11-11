@@ -37,3 +37,4 @@ On my home page (`jomnouy/src/views/HomeView.vue`), the `posts` store sets `load
 
 **(c) Where is each form field validated?**  
 All three post fields (`category`, `title`, and `content`) are validated client-side in `jomnouy/src/views/CreatePostView.vue` using a `computed` `errors` object before calling `store.addPost`. `category` is required, `title` is trimmed and must be 3 to 100 characters long, and `content` is trimmed and cannot be empty. I show each field's error message underneath its input only after the first submit attempt (`submitted` becomes `true`), keep the user's input, disable the Publish button while `submitting` is `true`, and show any API error in `submitError` (server validation comes in M2).
+

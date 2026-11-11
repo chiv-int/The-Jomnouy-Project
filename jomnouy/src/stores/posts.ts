@@ -26,9 +26,16 @@ export const usePostsStore = defineStore('posts', () => {
     }
   }
 
+  // Tracks the newest loadPosts request so older out-of-order responses are discarded.
+  let latestPostsRequestId = 0
+
   function loadPosts(filters: PostFilters = {}) {
+    const requestId = ++latestPostsRequestId
     return run(async () => {
-      posts.value = await postsApi.list(filters)
+      const list = await postsApi.list(filters)
+      if (requestId === latestPostsRequestId) {
+        posts.value = list
+      }
     })
   }
 
@@ -45,6 +52,11 @@ export const usePostsStore = defineStore('posts', () => {
     })
   }
 
+  async function getCommentCount(postId: number): Promise<number> {
+    const postComments = await commentsApi.listForPost(postId)
+    return postComments.length
+  }
+
   // Errors are not caught here: the form shows them next to the Publish button.
   async function addPost(data: NewPost, user: User) {
     const created = await postsApi.create(data, user)
@@ -52,5 +64,15 @@ export const usePostsStore = defineStore('posts', () => {
     return created
   }
 
-  return { posts, currentPost, comments, loading, error, loadPosts, loadPost, addPost }
+  return {
+    posts,
+    currentPost,
+    comments,
+    loading,
+    error,
+    loadPosts,
+    loadPost,
+    getCommentCount,
+    addPost,
+  }
 })

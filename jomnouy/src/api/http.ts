@@ -1,6 +1,6 @@
 // One place that talks to the network. Every resource file in src/api/ uses it.
 // If your practice repo (week05 starter) already has src/api/http.ts, you can use that one instead.
-export const BASE_URL = 'http://localhost:3000'
+export const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 export class ApiError extends Error {
   status: number

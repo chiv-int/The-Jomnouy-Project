@@ -6,8 +6,8 @@ Rule used everywhere: **props go down, events go up**. Shared server data lives 
 
 | Store | Owns |
 |---|---|
-| `session` | current user, role (member / moderator) |
-| `posts` | post list, current post, comments, loading and error flags |
+| `session` | current user, role (`member` / `moderator`), `setRole` action |
+| `posts` | post list, current post, comments, loading and error flags, `loadPosts` with race condition guard, `loadPost`, `getCommentCount`, `addPost` |
 | `profile` | viewed profile and their pinned posts |
 | `reports` | reported content, loading and error flags |
 
@@ -16,18 +16,19 @@ Rule used everywhere: **props go down, events go up**. Shared server data lives 
 ```
 App.vue
 ├── AppHeader
+├── SideBar
 └── <RouterView>  (one page below)
 ```
 
 | Component | Props | Events | State |
 |---|---|---|---|
-| `AppHeader` | none | none | reads `session` store (role switch) |
+| `AppHeader` | none | `toggleMenu` (emitted on hamburger click) | reads `session` store (`currentUser`, `role`) via `storeToRefs`, updates role via `setRole` action; local search text |
+| `SideBar` | `isOpen: boolean` | `close` | reads route query (`?category=...`), reads `session.isModerator` |
 
 ## Home feed (`/`)
 
 ```
 HomeView
-├── CategoryRail
 ├── StatePanel          (error / empty states)
 ├── SkeletonCard        (loading state)
 └── PostCard (v-for)
@@ -35,11 +36,12 @@ HomeView
 
 | Component | Props | Events | State owner |
 |---|---|---|---|
-| `HomeView` | none | none | posts, loading, error in `posts` store. Search text and selected category are local to this component. |
-| `CategoryRail` | `v-model`: `Category \| 'All'` (required, via `defineModel`) | `update:modelValue` (automatic from `v-model`) | none: the parent (`HomeView`) owns the selected category, the rail only changes it |
-| `PostCard` | `post: Post` | none | none, display only |
+| `HomeView` | none | none | `posts`, `loading`, `error` in `posts` store. Reads active category and search filter directly from route query (`$route.query`). |
+| `PostCard` | `post: Post` | none | Local state for post editing (`isEditing`, `currentTitle`, `currentContent`), delete confirmation dialog (`isConfirmingDelete`, `isDeleted`), menu dropdown (`isMenuOpen`), and comment count (`commentCount` loaded via `postsStore.getCommentCount`). |
 | `SkeletonCard` | none | none | none |
 | `StatePanel` | `title: string`, `message?: string`, `actionLabel?: string` | `action` (button clicked, e.g. "Try again"). The button only shows when `actionLabel` is set. | none |
+
+> *Note:* The early prototype component `CategoryRail.vue` was retired and replaced by `SideBar.vue` to support the full-screen Reddit-style left navigation rail across all views.
 
 ## Post detail (`/posts/:id`)
 
@@ -68,4 +70,4 @@ HomeView
 ## Why state lives where it does
 
 - **In stores:** data from the server that several pages use, the loading and error flags, and the session. It must survive moving between pages.
-- **In components:** what is typed in the form, the selected category icon, the search text, `submitting`. It disappears when the screen closes.
+- **In components:** what is typed in the form, post-card editing buffers, the search text, drawer open/closed status, and `submitting` flag. It disappears when the screen closes or resets.

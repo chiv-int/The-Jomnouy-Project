@@ -133,16 +133,6 @@
       "category": "Rent",
       "isClosed": false,
       "createdAt": "2026-10-25T09:00:00Z"
-    },
-    {
-      "category": "Question",
-      "title": "ghjkl",
-      "content": "sdfghjkl;",
-      "userId": 1,
-      "authorName": "Dara",
-      "isClosed": false,
-      "createdAt": "2026-11-05T07:59:10.127Z",
-      "id": 13
     }
   ],
   "comments": [

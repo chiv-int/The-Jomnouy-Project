@@ -50,10 +50,5 @@ Errors are displayed under each field only after the first submission attempt. T
 ## Known Limitations
 - **Request Race Conditions & Cancellation:** In `src/stores/posts.ts`, an incrementing request ID ensures responses from older pending queries cannot overwrite results from newer search or category selections. Full network-level cancellation (via `AbortController`) is a known limitation reserved for Milestone 2.
 - **Image Uploads:** File input controls for attaching images to posts and comments are decorative prototypes for Milestone 1; file persistence and cloud storage will be implemented in Milestone 2.
-
-## M1 submission
-    git checkout -b m1-frontend
-    # work, commit, open a pull request, merge it
-    git tag m1
-    git push --follow-tags
+- **Post card edit and delete:** editing and deleting on post cards is UI-only in Milestone 1 and is not saved; saving to the API comes in Milestone 2.
 

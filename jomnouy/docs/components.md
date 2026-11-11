@@ -67,6 +67,12 @@ HomeView
 |---|---|---|---|
 | `ModerationView` | none | none | reports in `reports` store. Route guard checks `session` role. |
 
+## Not found (`/:pathMatch(.*)*`, 404 page)
+
+| Component | Props | Events | State owner |
+|---|---|---|---|
+| `NotFoundView` | none | none | none. Renders `StatePanel` and a `RouterLink` back to `home`. |
+
 ## Why state lives where it does
 
 - **In stores:** data from the server that several pages use, the loading and error flags, and the session. It must survive moving between pages.
